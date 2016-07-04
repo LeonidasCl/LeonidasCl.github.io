@@ -2,7 +2,10 @@
 layout: frontpage
 ---
 
-## Welcome to my website
+宁江散人之文集，集文之人散江宁。
 
-This is the place where I share my ideas on topics like [Paracraft](http://www.paracraft.cn) software design, artificial intelligence and education. 
-Feel free to send me emails or join our team. 
+台固北临东风起，起风东临北固台。
+
+旧言天时秦亡楚，楚亡秦时天言旧。
+
+开得金陵筑坚凿，凿坚筑陵金得开。
