@@ -22,17 +22,17 @@ ViewGroup继承于View所以当然兼具三种方法，但因为ViewGroup的响�
 
 先从View开始讲——现在用户点击了屏幕上的某个按钮（Button也是View）。点击事件发生之后，会进入这个Button的dispatchTouchEvent方法，由这个方法来分发事件，下面是View.dispatchTouchEvent的源码：
 
-`
-public boolean dispatchTouchEvent(MotionEvent event) {
-    // If the event should be handled by accessibility focus first.
-    if (event.isTargetAccessibilityFocus()) {
-        // We don't have focus or no virtual descendant has it, do not handle the event.
-        if (!isAccessibilityFocusedViewOrHost()) {
-            return false;
+
+    public boolean dispatchTouchEvent(MotionEvent event) {
+        // If the event should be handled by accessibility focus first.
+        if (event.isTargetAccessibilityFocus()) {
+            // We don't have focus or no virtual descendant has it, do not handle the event.
+            if (!isAccessibilityFocusedViewOrHost()) {
+                return false;
+            }
+            // We have focus and got the event, then use normal event dispatch.
+            event.setTargetAccessibilityFocus(false);
         }
-        // We have focus and got the event, then use normal event dispatch.
-        event.setTargetAccessibilityFocus(false);
-    }
 
     boolean result = false;
 
@@ -75,11 +75,11 @@ public boolean dispatchTouchEvent(MotionEvent event) {
 
     return result;
 }
-`
+
 
 源码都比较多，为了更快，直接找关键部分，看到后两个if判断，它们分别调用了onTouch和onTouchEvent，我们知道了两个方法谁先谁后了。对if的条件进行分析，在第一个if中，所有条件都为true才能进去。既然发生了触摸事件，那第一个肯定true了，第二个是有没有监听，第三个条件，控件是否开启，在这里也是true，第四个条件是onTouch的返回值，熟悉监听机制的就明白了——onTouch是设置监听器时我们要重载的方法，通常在其中写上要进行地方操作，那么既然有这样的判断，如果我们在onTouch中返回true，就能进这个if，result会变成true，注意接下来这个if的写法：
 
-if (!result && onTouchEvent(event))
+`if (!result && onTouchEvent(event))`
 
 result判断是写在前面的，所以，由于&&具有短路的功能，第一个条件不满足时，第二个条件就不执行了——也就是如果我们onTouch中返回true，将导致onTouchEvent不能得到执行。从onTouchEvent的源码可以得知，点击事件是在那里面处理的，所以按钮其实是先响应touch再响应click。对于ListView这样自带滑动的控件，如果我们在onTouch里返回了True，自带的滑动会就不会执行了。所以onTouch方法默认返回的是false，如果返回true则表示这个事件被消费了，被消费的事件就不会再被处理了。
 
@@ -89,13 +89,13 @@ result判断是写在前面的，所以，由于&&具有短路的功能，第一
 
 这个if中有很多代码，很复杂，但结合这个if的注释可以知道，它的工作是将事件继续向下分发给这个View的被点中的子View，这就是事件向下分发的过程了。在121行有dispatchTransformedTouchEvent方法的调用，在该方法中有这么一段：
 
-`
-if (child == null) {
-    handled = super.dispatchTouchEvent(event);
-} else {
-    handled = child.dispatchTouchEvent(event);
-}
-`
+
+    if (child == null) {
+        handled = super.dispatchTouchEvent(event);
+    } else {
+        handled = child.dispatchTouchEvent(event);
+    }
+
 
 可以看出该方法会寻找相应的子控件的dispatchTouchEvent，如果没有子控件了，就说明这个控件已经是最底层控件，于是用父类的dispatchTouchEvent，也就是View.dispatchTouchEvent，然后全按照前面说的View的响应机制来。所以如果子控件中还有子控件，那么子控件的子控件的dispatchTouchEvent也会被调用，直到最下面一层的控件为止。dispatchTouchEvent是栈式的调用，此时父控件的dispatchTouchEvent并没有返回。
 
