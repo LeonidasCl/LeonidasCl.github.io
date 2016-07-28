@@ -35,17 +35,17 @@ getText是表单项数据模型中自己写的获取数据成员的get
 
 代码很多所以只贴关键部位了，头部view加上去因为一开始要隐藏，所以得设置整个view的padding为自身的高度负值，padding这么玩也是很有套路的
 
-`
-private void initHeaderView() {
-    headerView = View.inflate(getApplicationContext(), R.layout.refresh_header, nul
-    //省略：用findViewById找到各子view，这些子view和header都是listview
-    headerView.measure(0, 0); //直接获取高度会获取到0，只能用这种办法量出header的实际高度
-    headerViewHeight = headerView.getMeasuredHeight();
-    headerView.setPadding(0, -headerViewHeight, 0, 0);//padding要设置好，一开始要隐藏
-    this.addHeaderView(headerView); //这个方法是View类原有的，创建好我们的header将其传进去就可以了
-    initAnimation();
-}
-`
+
+    private void initHeaderView() {
+        headerView = View.inflate(getApplicationContext(), R.layout.refresh_header, nul
+        //省略：用findViewById找到各子view，这些子view和header都是listview
+        headerView.measure(0, 0); //直接获取高度会获取到0，只能用这种办法量出header的实际高度
+        headerViewHeight = headerView.getMeasuredHeight();
+        headerView.setPadding(0, -headerViewHeight, 0, 0);//padding要设置好，一开始要隐藏
+        this.addHeaderView(headerView); //这个方法是View类原有的，创建好我们的header将其传进去就可以了
+        initAnimation();
+    }
+
 
 底部view的初始化也一个套路，这两个方法的调用我放在构造方法里了，让头部和底部view和listview一起创建。
 
