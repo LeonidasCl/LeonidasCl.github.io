@@ -1,0 +1,85 @@
+---
+layout: post
+title:  "在AndroidStudio中使用git"
+date:   2016-08-15 15:17:18
+categories: Git
+comments: true
+---
+
+
+git很强大，git和IDE结合之后，会变得更强大，更易用。今天就来写写git在AndroidStudio中的配置和使用。
+
+首先在github上创建一个空的仓库，克隆到本地来，这个步骤之前的文章就有，这里省略了。
+
+然后在本地的仓库目录里创建AndroidStudio项目，像这样：
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/01.jpg)
+
+由于目录里已经有git，所以AS打开项目的时候就会在右上角弹气泡提示你配置版本控制，这里我们点configure，图忘记截了，点完会弹出版本控制的配置窗口：
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/02.jpg)
+
+选中路径点绿色加号就可以了。之后再想打开这个窗口可以按下图的这个设置键，或者右键项目选设置。
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/03.jpg)
+
+设置好之后再把github用户名密码也配置一下，配置完可以点test测试。配置过程中如果出现要求输master password就输，如果没有配置过master password就点reset自己设置一个吧，这个密码不是github的，是android studio的，后面给app签名的时候也会用到，自己设置一个就行了。
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/00.jpg)
+
+这个时候我们能不能push呢？当然不能。懂一点git的应该就知道push前要git add，然后commit。还记得暂存区的概念么？现在目录里的文件都是红色，表示未跟踪状态（都未跟踪了当然未暂存），所以我们要add一下子，直接右键项目文件夹-git-add就可以将项目的所有文件当前修改添加到暂存区，变成绿色。额外提一下，通常未更改的文件就是正常颜色，我们在对某个文件进行add之后，再更改那个文件，文件会变成蓝色，但不需要再次add了，而是直接在AS里commit。
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/04.jpg)
+
+可以看到，这些文件添加到暂存区后变成了绿色，也就是已暂存状态，这时就可以commit了：
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/05.jpg)
+
+commit的时候会弹一个窗让你填提交信息，并且告诉你这次提交更改了哪些文件，左上角的几个按钮是提供查看功能的，可以看到具体哪一行被更改了，十分强大的功能。
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/06.jpg)
+
+提交的时候默认会进行代码分析（code analysis），可以帮你检出一些代码的问题，比如可简化的运算符、判断式等等，可以参考，不过有人反映，commit的时候代码分析对话框一闪而过，随后查看log，发现并没有提交。这时候暂时把代码分析关掉就可以提交了，下次提交的时候再打开。这里我们选commit and push，完成后看log就有我们的提交信息：
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/07.jpg)
+
+这样我们就介绍了commit和push，接下来介绍update，也就是把远程的更新拉到本地来。update的按钮就在commit旁边，我们先把push上去的文件随便改个一行，好让本地和远程的代码有点区别，然后点击update project会弹出一个对话框，我们会看到两组共五个单选框：
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/08.jpg)
+
+这玩意是什么意思呢？rebase叫做`变基`,可以把某个分支的修改全移动到另一个分支上，这样可以使分支历史更简洁，实际效果是和merge一样的，如果分支在别的仓库中有副本，就不推荐这种方式，所以这里不需要。branch default会按照.git文件夹里config文件配置的分支默认设置来进行合并，通常效果和merge一样。merge选项效果就相当于fetch+merge或者是pull了。
+我们选择merge和using stash来update。
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/09.jpg)
+
+可以看到，由于我在本地和远程代码的同一行进行了修改，代码产生了冲突，自动合并失败了，需要手动处理。我们点击merge。（如果点上面两个use可以选择抛弃一方的更改来实现自动合并，很多情况下是不可行的）
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/10.jpg)
+
+左边是本地更改，右边是服务器上的文件，中间是最终的合并结果，我们只需要编辑中间的merge result，参照左右两个版本，点击红圈标出来的按钮加以取舍后，点apply就可以完成冲突处理了（如果不是简单的取舍某一个，就手动编辑吧）。是不是比不用IDE的处理方式方便多了？
+
+然而冲突处理完成后，这个mainactivity文件并没有变成处理结果那样，这是为什么呢？因为我们还没有把从远程拉下来的更改合并进本地master！现在这个处理冲突完成的结果，是存在**跟踪分支**的（之前的文章提到过）！所以，就按之前的办法，找到跟踪分支，将其检出成为新的分支，然后合并进master，这两步如果没看懂得回去看前面的文章去了！
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/11.jpg)
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/12.jpg)
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/13.jpg)
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/14.jpg)
+
+合并后会提示合并完成，可以删除dev分支了，这样我们就完成了pull操作。
+
+之前我们提到过，多人协作的时候如果他人先推了代码到远程，你晚些时候再推，push会被拒绝，你要把远程的修改pull下来合并好再push上去。这个操作在AndroidStudio中有所简化：当push被拒绝时会提示我们合并（下图），点击合并会进入到之前见到的那个冲突处理窗口，处理冲突完成后，你本地的代码也就与远程合并好了，这时候你再push就可以了（这次我从菜单的VCS选项里打开的push）。
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/15.jpg)
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/16.jpg)
+
+为什么我前面只介绍了update不介绍pull呢？一个是因为pull太简单了，还有一个就是因为pull有点草率。update就相当于我们在git bash命令行里的fetch，拿下来后还要再手动合并，pull就直接合并了（之前的文章也提到过了）。pull按钮也好找，就在push旁边。可以看到AS默认的视图把push和pull按钮都藏菜单里，放在主界面的只是commit和update按钮，也是鼓励用户这么做的意思吧。下面两张图就是直接pull的做法。
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/17.jpg)
+
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160815/18.jpg)
+
+这篇文章介绍的push、pull、merge等等操作之前其实都是以命令行操作的方式介绍过的，不过感觉在IDE上操作和在命令行操作还是有点不一样的，所以特别写了一个。
