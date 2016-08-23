@@ -31,7 +31,7 @@ ListView是安卓界面中必不可少的组件，今天直入正题介绍ListVi
 
 然后运行我们的app，就能看到效果了：
 
-![图片](http://obdvl7z18.bkt.clouddn.com/image/20160710/05.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/image/20160710/05.jpeg)
 
 接下来再试试SimpleAdapter，用这个Adapter我们就可以处理较为复杂的界面了。首先还是要在对应的Activity中添加一个ListView（ListView就像个容器，当然也可以用原来的，不过为了防止混淆还是新写了一个）：
 
