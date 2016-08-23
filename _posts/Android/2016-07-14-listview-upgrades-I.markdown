@@ -6,7 +6,7 @@ categories: Android
 comments: true
 ---
 
-最简单的ListView大家都会，实现起来只需要做三件事：
+现在最简单的ListView大家都会，实现起来只需要做三件事：
 
     1.建一个list，把它丢到界面布局的ListView里面去
 
