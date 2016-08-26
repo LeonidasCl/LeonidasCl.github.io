@@ -8,7 +8,7 @@ comments: true
 
 工作区，可以理解为一个工作目录，比如.git文件夹所在的这个文件夹就是一个工作区
 
-![图片](20160606p1.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160606p1.jpg)
 
 通常我们在这个工作区里直接进行代码的编辑，文件的修改。
 
@@ -16,11 +16,11 @@ comments: true
 
 对于工作目录中新建的文件，执行git status时会提示该文件untracked
 
-![图片](20160606p2.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160606p2.jpg)
 
 对已有的文件作出更改，执行git status时会提示
 
-![图片](20160606p3.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160606p3.jpg)
 
 这两种情况都要先git add，再git commit提交更改，即先将更改保存到暂存区，再将暂存区的更改提交。
 
@@ -34,7 +34,7 @@ comments: true
 
 工作区、暂存区、仓库目录的关系可以用这张图说明
 
-![图片](20160606p4.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160606p4.jpg)
 
 这样git仓库目录中的文件一共可以有三种状态：已修改、已暂存、已提交。
 

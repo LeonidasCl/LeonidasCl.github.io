@@ -14,19 +14,19 @@ comments: true
 
 首先，实现一个自定义的view类，从布局管理器继承一个合适的，再自己加上需要的功能，我就加上了一个滑动动画。
 
-![图片](20160626p1.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160626p1.jpg)
 
 对于这个view的一些属性值，在res的value里建一个XML来声明，以便在其它代码中调用：
 
-![图片](20160626p2.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160626p2.jpg)
 
 想要使用这个view，当然是把它添加到某个activity或fragment的布局文件中，就像添加一个原有的view一样，添加的时候给这些属性赋上默认值，若代码中未设置，就会使用这些默认值了：
 
-![图片](20160626p3.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160626p3.jpg)
 
 在该view的代码中这样获取上图fragment中的数值：
 
-![图片](20160626p4.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160626p4.jpg)
 
 Getxxxxx的第二个参数是解决xml中没有搜索到对应值的情况的，那时第二个参数就会被赋给这个属性。
 
@@ -34,6 +34,6 @@ Getxxxxx的第二个参数是解决xml中没有搜索到对应值的情况的，
 
 复用的时候，只要在复用的XML里添加这个view的项，再写明需要的值就可以了，如果按下图这种写法就不能复用，一开始没有理解透彻，觉得用typearray转一圈取数值很麻烦，所以写了这样的代码：
 
-![图片](20160626p5.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160626p5.jpg)
 
 这样会使自定义的view类失去可重用性。所以写view是时候一定要多留心，规范的写法远比简单的写法要好。

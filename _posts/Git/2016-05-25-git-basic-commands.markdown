@@ -13,7 +13,7 @@ comments: true
 
 输入命令可显示版本号，说明安装好了
 
-![图片](20160525p1.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160525p1.jpg)
 
 创建新目录并将其移到本地git数据库
 
@@ -29,15 +29,15 @@ comments: true
 
 检查目录的状态，发现新的文件
 
-![图片](20160525p2.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160525p2.jpg)
 
 把所有文件加入索引
 
-![图片](20160525p3.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160525p3.jpg)
 
 再次检查发现已加入索引，提交
 
-![图片](20160525p4.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160525p4.jpg)
 
 修改后再用status可检查状态
 
@@ -45,14 +45,14 @@ comments: true
 
 对二进制文件是不能查看的，只能知道是否更改
 
-![图片](20160525p5.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160525p5.jpg)
 
 查看提交历史
 
-![图片](20160525p6.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160525p6.jpg)
 
 退回上个版本
-![图片](20160525p7.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160525p7.jpg)
 
 HEAD表示当前版本HEAD^是上一个版本
 
@@ -62,13 +62,13 @@ HEAD表示当前版本HEAD^是上一个版本
 
 关联本地库与远程库并将本地文件push到远程
 
-![图片](20160525p8.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160525p8.jpg)
 
 认证时用户名密码就是github的用户名密码
 
 于是Github上已经有了这个库
 
-![图片](20160525p9.jpg)
+![图片](http://obdvl7z18.bkt.clouddn.com/img/20160525p9.jpg)
 
 本地作了提交后，还需要用
 
