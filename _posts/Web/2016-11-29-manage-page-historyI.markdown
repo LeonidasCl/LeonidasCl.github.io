@@ -17,11 +17,12 @@ comments: true
 这两种情况下用户点返回键的本意都不是返回上一页，但网页的实际表现是返回上一页的。从用户的体验角度来说这个网页并不善解人意，不善解人意的产品就不是好产品，一个好的产品应该是善良的，懂得体会用户在不同场景下的不同需求，然后根据这些需求去达到想要的交互。所以我们应该实现用户点击返回键时自主管理页面内容而不是简单粗暴的返回，以上都是讲给产品经理听的废话，技术实现才是坠重要的。
 
 项目组首先想到的解决方案是监听popstate：
-`    $(function(){
+
+`$(function(){
 		pushHistory(); 
 	    window.addEventListener("popstate", function(e) { 
 	      //alert("我监听到了浏览器的返回按钮事件啦");//根据自己的需求实现自己的功能 
-	      window.location = 'http://www.xxxxx.com';
+	      window.location = "http://www.xxxxx.com";
 	    }, false); 
 	    function pushHistory() { 
 			var state = { 
@@ -30,9 +31,8 @@ comments: true
 			}; 
 	      window.history.pushState(state, "title", "#"); 
 	    }
+    });`
 
-    });
-    `
 这个方法在安卓机上是实测有效的，但到了IOS设备上测试时，回调函数总会在莫名其妙的地方被调用，比如打开选择图片菜单的时候。在不同安卓设备上反应也不一样，查了下popstate这个属性毕竟还是比较新，可能兼容性不大好，只好另找办法了。popstate比较容易被触发，管理页面历史，还有另一个办法，那就是用url的hash值来管理。
 
 访问一些网页的时候我们会在url末尾看到一个#接上一个字符串，这个就是页面的location.hash属性，location.hash的属性我见得多了，至少就有以下几种：
