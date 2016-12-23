@@ -10,7 +10,8 @@ comments: true
 
 　　插件的文件都要放在一个目录里，我们先建一个这样的目录，然后再建立manifest文件，这是一个json格式的文件，用来描述插件的基本配置：
 
-`{
+```json
+{
   "manifest_version": 2,/*版本1或者2在一些配置字段名上会有不同，这里使用2*/
 
   "name": "excited add-in",					/*插件名称*/
@@ -25,7 +26,8 @@ comments: true
     {"js":["script1.js"],"matches":["https://www.hao123.com/"]},
     {"js":["script2.js"],"matches":["https://*.taobao.com/*"]}
   ]
-}`
+}
+```
 
 　　最后的content_scripts就是要加载的js文件与网址的匹配情况，这里可以加载js也可以加载css或html，当打开的网页符合matches中的规则时，对应的脚本就会被加载，非常简单的逻辑。当然，manifest文件的可用字段远不止这些，还有很多可以探寻，比如插件的icon之类。
 
@@ -33,12 +35,17 @@ comments: true
 
 script1中有语句：
 
-`function check(){
-	alert('开启了hao123');
-	location.reload();
+```javascript
+function check(){
+
+alert('开启了hao123');
+
+location.reload();
+
 }
 
-setInterval("check()",4000);`
+setInterval("check()",4000);
+```
 
 script2中有语句：
 
