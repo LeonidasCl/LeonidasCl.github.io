@@ -53,4 +53,19 @@ comments: true
 
 
 
-　　往dockerhub进行push的过程非常慢，一看就知道是因为防火长城的存在。在这么慢的速度下进行实际开发是不可能的，好在国内已经有很多服务商在提供docker服务，我们可以用这些服务商提供的服务来快速构建持续集成的系统。
+　　往dockerhub进行push的过程非常慢，一看就知道是因为防火长城的存在。在这么慢的速度下进行实际开发是不可能的，好在国内已经有服务商在提供加速的服务，DaoCloud的加速器就是其中一例。这个加速服务对全网用户免费开放，用起来速度很赛艇。打开加速器的网址：
+
+http://www.daocloud.io/mirror.html#accelerator-doc
+
+
+
+
+选择相应的系统按提示配置就可以了，对于我的CentOS7这样做：
+
+`curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://1ad3cfbe.m.daocloud.io`
+
+然后再重启docker服务：
+
+`sudo systemctl restart docker`
+
+这时再访问dockerhub，会发现速度提升很大，可以愉快地赛艇了。
