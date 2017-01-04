@@ -1,0 +1,51 @@
+---
+layout: post
+title:  "记一次git误操作后应急处理"
+date:   2017-01-03 21:02:16
+categories: Git
+comments: true
+---
+
+　　
+
+　　2017年的第二天，从早玩到晚想起来前几天建的新仓库还没有push到远程，于是本着今日事今日毕的原则在睡觉前又开了github，在上面建了一个空仓库，顺便选了LICENCE。然后在自己机子上打开git bash，给本地的新代码添加git库，做了initial commit，准备remote add建立关联，然后推代码到远程仓库去。可以看到这是今天新写的一个Arduino源文件。
+
+![图片1](http://obdvl7z18.bkt.clouddn.com/image/20170103/01.jpg)
+
+　　
+
+　　到了凌晨这个点人会犯困，一犯困就要犯错，就在我push的时候问题来了。第一次是首次推送忘记加-u设置上游分支，加完发现push被拒绝了。这时候才有点清醒，想到先从远程pull下来。
+
+![图片2](http://obdvl7z18.bkt.clouddn.com/image/20170103/02.jpg)
+
+　　这个时候发现pull下来的分支并没有被合并，其实没建立关联当然不能合并了，但是当时没有想到这一点，pull下来后就又尝试push，既然没有合并本地master还是比远程旧，当然又push不上去。
+
+
+
+　　解决问题的时候不能着急，着急就会犯更大的错误。当时有点着急push不上去，于是用了强制pull来放弃本地更改，结果就是虽然本地master和远程合并，但本地的修改，也就是这个新仓库的initial commit被丢弃了，再加上合并后又push并建立了关联。结果就是我本地所有的代码都不在本地和远程的master分支里了。
+
+
+
+　　到这时我才完全清醒了，能够意识到本地的代码并没有丢失，只是由于自己强行建立关联，导致本地修改的代码变成了无关联的游离HEAD。git有一点好，就是无论如何操作都很难真正把本地更改彻底删除掉，一切都是可恢复的。于是用git log寻找之前丢失的commit的id：
+
+![图片4](http://obdvl7z18.bkt.clouddn.com/image/20170103/04.jpg)
+
+可以看到git也提示了这个commit当前是游离的HEAD，于是切换到这个commit：
+
+![图片6](http://obdvl7z18.bkt.clouddn.com/image/20170103/06.jpg)
+
+　　
+
+　　开始想直接合并，git提示不允许合并无关的历史，于是建立一个新分支来保存这个commit，再强制合并，终于把代码找回来了。
+
+
+
+　　最后合并的时候还遇到一点波折，先是把master（其中没有包括丢失的代码）强制合并到dev（其中包括丢失的代码），git提示未完全合并，所以我再切回master把dev合并过来，才解决了问题。
+
+![图片7](http://obdvl7z18.bkt.clouddn.com/image/20170103/07.jpg)
+
+![图片8](http://obdvl7z18.bkt.clouddn.com/image/20170103/08.jpg)
+
+　　
+
+　　解决后想想原因第一次合并没有合并完全，是因为master被远程master强制同步（之前pull用的-f）导致本地master和远程一样只有个LICENCE。合并完想删dev的时候git提示了未完全合并（这个机制挺好的），我查看了资源管理器里的文件，确实还没找回代码，才想到切换回master去把dev合并了。整个过程可以说是一波三折。
