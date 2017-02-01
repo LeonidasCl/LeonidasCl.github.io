@@ -1,0 +1,126 @@
+---
+layout: post
+title:  "用ESP8266透传实现Arduino建立socket连接"
+date:   2017-01-31 14:27:30
+categories: IoT
+comments: true
+---
+
+　　这篇文章一月初就有，过完春节才想起没发，于是补上发来。
+
+
+
+　　Arduino功能强大，但没有自带无线网卡。我们如果想要Arduino实现部署后自动连上无线，往服务器发送数据，就需要给Arduino添加一个无线模块。我就是这么开始接触ESP8266的。ESP8266是一款性能很优秀的单片机，可以自己刷固件用lua进行开发，拥有自己的IDE，也可以集成到Arduino的IDE上进行开发，这块小芯片甚至可以运行Python。当然前面提到的这些我都没有试过，我现在只是想大材小用，用ESP8266帮助我的Arduino连上wifi，以便给服务器发送数据。
+
+
+
+　　用Arduino操作ESP8266的方式就是通过串口给ESP8266发数据。发的数据是ESP8266的开发商官方提供的AT指令，这些AT指令可以实现ESP8266联网、建立socket服务器或客户端、发送数据等等功能，具体的指令集有官方的AT指令集目录，在这里就不详细介绍了；发数据用的串口则不是硬件串口，而是通过Arduino上的IO口膜拟的软串口，所以要用到Aeduino官方的SoftwareSerial库。所以完整的实现方式就是将ESP8266连接到Arduino上，在Arduino的IDE上写代码来进行控制。
+
+
+
+接线之前要先放一张ESP8266-01也就是我这块ESP8266的示意图：
+
+![图1](http://obdvl7z18.bkt.clouddn.com/image/20170201/01.png)
+
+
+
+　　我们需要连接的是ESP8266的VCC、GND、RXD、TXD和CH_PD口，VCC是电源口，需要接3.3V电源，GND接到电源的GND，RXD、TXD分别接到UNO板上的3口和2口，用来做膜拟串口的收和发。CH_PD需要保持高电平，因为这个CH_PD拉低电平的时候是刷固件的膜式，拉高是工作膜式。我在这里不采用直接连接的方式，而是先将CH_PD连到一个10kΩ的电阻，再连到3.3v电源口。
+
+　　接线有几个要注意的地方，VCC和CH_PD需要共阴，就是通过连到同一个3.3V阳极让他们能够共阴。据说Arduino自带的3.3v电源可能不稳定需要外接独立电源，不过经过我尝试Arduino的电源是可以用的，如果不行再换独立电源就好了。
+
+接好线之后就开始刷代码：
+
+
+
+<pre><code>#include "SoftwareSerial.h"
+
+//软串口接线： ESP8266rx-UNOpin3 ESP8266tx-UNOpin2
+SoftwareSerial mySerial(2, 3); 
+//设置好wifi的SSID和密码
+String WiFiSSID = "excited";
+String WiFiPASSWORD = "123456789";
+String nodenum="01";
+int i=0;
+void setup() {
+  Serial.begin(115200);
+  mySerial.begin(115200);
+
+  Serial.println("initial start");
+  //等待ESP8266启动完成，正常的启动应该是蓝灯闪两下灭，红灯常亮
+  delay(5000);
+  //AT指令：如果之前就是透传模式先退出
+  Serial.println("exit pass-through mode");
+  mySerial.print("+++");
+  delay(1000);
+  mySerial.print("AT\r\n");
+  delay(1000);
+  printmssage();
+  //关闭命令回显
+  Serial.println("Close command echo");
+  mySerial.print("ATE0\r\n");
+  delay(1000);
+  printmssage();
+  //设置wifi模式为Station，即wifi客户端
+  Serial.println("choose station mode");
+  mySerial.print("AT+CWMODE=1\r\n");  
+  delay(1000);
+  printmssage();
+  //连接wifi
+  Serial.println("connect wireless router");
+  mySerial.print("AT+CWJAP=\"");
+  mySerial.print(WiFiSSID);
+  mySerial.print("\",\"");
+  mySerial.print(WiFiPASSWORD);
+  mySerial.print("\"\r\n");
+  delay(8000);
+  printmssage();
+  Serial.println("connecting remote server");
+  //连接远程服务器的某个端口，服务器上已经跑着socket服务端了
+  mySerial.print("AT+CIPSTART=\"TCP\",\"192.168.199.160\",9999\r\n");
+  delay(4000);
+  printmssage();
+  //进入透传膜式，进入透传膜式后就可以像服务器发数据
+  Serial.println("choose pass-through mode");
+  mySerial.print("AT+CIPMODE=1\r\n");
+  delay(3000);
+  printmssage();
+  Serial.println("enter pass-through mode");
+  //发送数据
+  mySerial.print("AT+CIPSEND\r\n");
+  Serial.println("prepare send");
+  delay(1000);
+  printmssage();
+  mySerial.print(nodenum);
+  mySerial.print(" online\r\n");
+  Serial.println("sended");
+  delay(1000);
+  Serial.println("setting over");
+  printmssage();
+}
+
+//循环发送数据，这里膜拟一个数据用来发送
+void loop(){
+  Serial.println(i);
+  delay(1000);
+  printmssage();
+  mySerial.print(i);
+  mySerial.print("foo\r\n");
+  delay(1000);
+  printmssage();
+  i=i+1;
+}
+void printmssage(){
+  if (mySerial.available()){
+      mySerial.readStringUntil('\n');
+  }
+}</code></pre>
+
+
+
+　　写好服务端的socket程序，监听9999端口发送的数据，开启服务器和Arduino，等一会就可以看到数据已经发来了：
+
+![图1](http://obdvl7z18.bkt.clouddn.com/image/20170201/02.jpg)
+
+
+
+　　虽然ESP8266的调试很简单，但第一次不免遇到一些坑，总知调好之后感觉还是很赛艇的。
