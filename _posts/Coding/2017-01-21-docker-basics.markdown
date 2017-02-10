@@ -1,71 +1,92 @@
 ---
 layout: post
-title:  "docker-拥抱docker hub"
-date:   2016-12-19 17:56:29
+title:  "详解docker的基本命令"
+date:   2017-01-21 23:46:16
 categories: Coding
 comments: true
 ---
 
 
-追影技术·第二章：云时代的小型APP（三）
+详解docker的基本命令
 -------------------------------------
 
-### docker-拥抱docker hub
 
 
 
 
-　　DockerHub是一个类似GitHub的网站，在这个网站上有全球用户发布的各种容器供我们下载，加入dockerhub能让我们更快地进行容器知识的学习，全球开源贡献者的工作对我们的帮助是很大的。当然在变得足够强大之后我们也要成为一个开源社区的贡献者，去回报。
+#### **从镜像运行容器**
 
-　　首先当然是要去dockerhub注册一个用户了，打开https://docs.docker.com去注册一个，填写完基本信息后我们的邮箱会收到验证邮件。点开验证邮件里的链接，就可以去登录了。
-
-登录之后我们先创建一个仓库：
-
-
-![图片1](http://obdvl7z18.bkt.clouddn.com/image/20161219/00.png)
-
-
-![图片2](http://obdvl7z18.bkt.clouddn.com/image/20161219/01.png)
-
-　　需要填写仓库名、简要和详细的描述信息，仓库的权限（公有或私有）等信息，填好这些基本的信息后点create就建立了一个docker仓库。这样通过浏览器创建的仓库默认都是公有的。
-
-
-
-　　现在，我们再把之前本地创建的新镜像push到dockerhub上去，先用images命令看看要推的是哪个：
-
-![图片2](http://obdvl7z18.bkt.clouddn.com/image/20161219/02.png)
-
-　　显然，第一个镜像是之前创建的，也就是等会要推上去的，可以看到它的镜像ID是e5867970ccc4。我们来给它做个标记，用tag命令：
-
-
-`$docker tag e586 leonidascl/docker-whale:latest`
-
-　　ID并不一定要打完整，只要能够在列表里区分，docker就能找到。给镜像设置tag之后，我们就可以根据tag来操作这个镜像。
-
-
-
-　　接着我们用docker login命令在本地登录一下dockerhub。输入命令后会提示输入用户名和密码。注意，这个登录命令要输入的是用户名而不是邮箱。这个步骤和在本地配置github账号也很相似的。
-
-成功之后我们就可以用docker push命令去推送到远程仓库：
-
-
-![图片2](http://obdvl7z18.bkt.clouddn.com/image/20161219/03.png)
-
-
-
-　　往dockerhub进行push的过程非常慢，一看就知道是因为防火长城的存在。在这么慢的速度下进行实际开发是不可能的，好在国内已经有服务商在提供加速的服务，DaoCloud的加速器就是其中一例。这个加速服务对全网用户免费开放，用起来速度很赛艇。打开加速器的网址：
-
-http://www.daocloud.io/mirror.html#accelerator-doc
+`docker run flags 镜像名 命令`
+　　容器可以分为交互式和非交互式两类，交互式容器可以提供一个终端程序，运行容器之后可以通过这个终端程序与容器进行交互，例如`docker run -i -t ubuntu`会基于名为ubuntu的镜像来运行一个容器，容器运行后会马上进入交互模式，可以通过命令行进行交互（-t意思就是创建一个tty中断，-i当然就是捕捉输入流了）；-d的flag可以创建一个守护式容器，`docker run -d ubuntu /bin/prog`这样创建的容器会在后台运行，容器运行后会执行/bin/prog程序。当然交互式容器也可附带运行时的命令。
+　　用--name的flag可以给新容器命名，如果不加这个flag，docker会给新容器起一个随机的名字，格式是两个单词中间一个下划线，随机的名字都比较一颗赛艇，所以我觉得不加这个flag也没关系。
+　　docker run命令格式非常丰富灵活，但最好将容器的相关信息写在配置文件中而不是每次用run命令来实现。
 
 
 
 
-选择相应的系统按提示配置就可以了，对于我的CentOS7这样做：
 
-`curl -sSL https://get.daocloud.io/daotools/set_mirror.sh | sh -s http://1ad3cfbe.m.daocloud.io`
+#### **容器的启动与停止**
 
-然后再重启docker服务：
+`docker start 容器名|容器ID`
+　　启动已停止的容器。容器ID不需要完整，只要能够标识唯一即可，实际上docker会根据给出的id进行搜索找到对应的容器。
 
-`sudo systemctl restart docker`
 
-这时再访问dockerhub，会发现速度提升很大，可以愉快地赛艇了。
+`docker stop 容器名|容器ID`
+　　停止运行中的容器，如果容器没有响应，可以用`docker kill`来停止。
+
+
+
+
+
+#### **查看镜像与容器**
+
+
+`docker images`
+
+　　列出所有镜像。
+
+`docker ps`
+
+　　列出所有正在运行的容器。
+
+`docker ps -a`
+
+　　列出所有容器。对于已经结束的会列出其结束了多久，对于正在运行的会列出运行了多久。
+
+`docker attach 容器名|容器ID`
+
+　　附着到正在运行的容器，查看其内部状态。
+
+`docker logs flags 容器名|容器ID`
+
+　　查看容器的日志。这个命令同样支持多种格式，例如-f的flag可以对日志进行跟踪（效果类似于attach），-ft可以在跟踪的同时给日志加上时间戳，--tail n的flag可以指定显示最后n条日志等等，十分灵活。
+
+`docker top 容器名|容器ID`
+
+　　可以查看容器内的进程。
+
+`docker stats 容器名|容器ID`
+
+　　可以查看容器的统计信息，得到一张包含CPU、内存等资源占用的列表，容器名/ID可以是多个。返回的信息有限，主要是一些运行中的统计信息。
+
+`docker inspect 容器名|容器ID`
+
+　　查看一个容器的详细信息，返回指定容器的详细信息，这个命令得到的信息要比`docker stats`详细得多，包括很多配置信息。这个命令支持用--format这个flag进行有效信息的筛选，使其只输出用户关心的内容。
+
+`docker exec`
+
+　　用于在容器中执行命令，这种方式可以在非交互的膜式下管理运行中的容器。例如`docker exec -i -t ubuntu_docker /bin/bash`能够在一个已经运行的叫ubuntu_docker的容器中打开命令行并进入交互模式。
+
+
+
+
+
+#### **容器与镜像的删除**
+
+`docker rm 容器名|容器ID`
+
+　　删除容器，容器名/容器ID可以是一个或多个，比如`docker rm 'docker ps -a -q'`就可以删除所有容器，因为单引号部分的命令已经把所有容器的ID都列出来了。
+
+`docker rmi 镜像名|镜像ID`
+
+　　删除镜像，这个命令与`docker rm`格式是一样的。
